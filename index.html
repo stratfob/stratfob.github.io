@@ -30,8 +30,27 @@
     <!-- Page Content -->
     <div class="container center_div">
 
+   		<div id="myModal" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h2 class="modal-title">Use one password for everything?</h2>
+					</div>
+					<div class="modal-body">
+						<p>This project in intended to make it easy to manage multiple passwords to avoid the common mistake of using one password for all of your logins. In this scenario, one compromised account compromises all of your accounts.</p><br>
+						<p>This website takes a single password and produces secure passwords for multiple common websites and services. This process is completely client-side Javascript; no information is transmitted or stored about your passwords.</p><br>
+						<p>The same input password will always produce the same output passwords. All you have to do is remember one password.</p>
+					</div>
+				</div>
+			</div>	
+    	</div>
+
         <div class="page-header">
-			<h1 class="text-center">Password Generator</h1>
+        	<div class="text-center">
+        		<h1>Password Generator</h1>
+				<a href="" data-toggle="modal" data-target="#myModal">What is this?</a>
+        	</div>
 		</div>
 		<div class="row">
 			<div class="col-md-4"></div>
@@ -46,37 +65,93 @@
             <div class="col-md-6">
 				<div class="panel panel-primary">
 					<div class="panel-heading"><h3 class="panel-title">Google</h3></div>
-					<div class="panel-body" id="Google"><br></div>
+					<div class="panel-body">
+						<div class="input-group">
+					      <input id="Google" type="password" class="form-control">
+					      <span class="input-group-btn">
+					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Google')">Copy</button>
+					      </span>
+					    </div>
+  					</div>
 				</div>
 				<div class="panel panel-primary">
 					<div class="panel-heading"><h3 class="panel-title">Facebook</h3></div>
-					<div class="panel-body" id="Facebook"><br></div>
+					<div class="panel-body">
+						<div class="input-group">
+					      <input id="Facebook" type="password" class="form-control">
+					      <span class="input-group-btn">
+					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Facebook')">Copy</button>
+					      </span>
+					    </div>
+					</div>
 				</div>
 				<div class="panel panel-primary">
 					<div class="panel-heading"><h3 class="panel-title">Microsoft</h3></div>
-					<div class="panel-body" id="Microsoft"><br></div>
+					<div class="panel-body">
+						<div class="input-group">
+					      <input id="Microsoft" type="password" class="form-control">
+					      <span class="input-group-btn">
+					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Microsoft')">Copy</button>
+					      </span>
+					    </div>
+					</div>
 				</div>
 				<div class="panel panel-primary">
 					<div class="panel-heading"><h3 class="panel-title">Reddit</h3></div>
-					<div class="panel-body" id="Reddit"><br></div>
+					<div class="panel-body">
+						<div class="input-group">
+					      <input id="Reddit" type="password" class="form-control">
+					      <span class="input-group-btn">
+					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Reddit')">Copy</button>
+					      </span>
+					    </div>
+					</div>
 				</div>
 			</div>
 			<div class="col-md-6">
 				<div class="panel panel-primary">
 					<div class="panel-heading"><h3 class="panel-title">Paypal</h3></div>
-					<div class="panel-body" id="Paypal"><br></div>
+					<div class="panel-body">
+						<div class="input-group">
+					      <input id="Paypal" type="password" class="form-control">
+					      <span class="input-group-btn">
+					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Paypal')">Copy</button>
+					      </span>
+					    </div>
+					</div>
 				</div>
 				<div class="panel panel-primary">
 					<div class="panel-heading"><h3 class="panel-title">Amazon</h3></div>
-					<div class="panel-body" id="Amazon"><br></div>
+					<div class="panel-body">
+						<div class="input-group">
+					      <input id="Amazon" type="password" class="form-control">
+					      <span class="input-group-btn">
+					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Amazon')">Copy</button>
+					      </span>
+					    </div>
+					</div>
 				</div>
 				<div class="panel panel-primary">
 					<div class="panel-heading"><h3 class="panel-title">Twitter</h3></div>
-					<div class="panel-body" id="Twitter"><br></div>
+					<div class="panel-body">
+						<div class="input-group">
+					      <input id="Twitter" type="password" class="form-control">
+					      <span class="input-group-btn">
+					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Twitter')">Copy</button>
+					      </span>
+					    </div>
+					</div>
 				</div>
 				<div class="panel panel-primary">
 					<div class="panel-heading"><h3 class="panel-title">Other</h3></div>
-					<div class="panel-body" id="Other"><br></div>
+					<div class="panel-body">
+						<div class="input-group">
+					      <input id="Other" type="password" class="form-control">
+					      <span class="input-group-btn">
+					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Other')">Copy</button>
+					      </span>
+					    </div>
+					</div>
 				</div>
             </div>
 
@@ -94,6 +169,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <p>This project is maintained by <a href="https://github.com/stratfob/">Ben Stratford</a></p>
+                    <TEXTAREA ID="holdtext" STYLE="display:none;"></TEXTAREA>
                 </div>
             </div>
         </footer>
@@ -104,14 +180,14 @@
 	<script>
 		function createHashes() {
 			var input = document.getElementById('input').value;
-			document.getElementById("Google").innerHTML=hash(input,"Google");
-			document.getElementById("Facebook").innerHTML=hash(input,"Facebook");
-			document.getElementById("Microsoft").innerHTML=hash(input,"Microsoft");
-			document.getElementById("Reddit").innerHTML=hash(input,"Reddit");
-			document.getElementById("Paypal").innerHTML=hash(input,"Paypal");
-			document.getElementById("Amazon").innerHTML=hash(input,"Amazon");
-			document.getElementById("Twitter").innerHTML=hash(input,"Twitter");
-			document.getElementById("Other").innerHTML=hash(input,"Other");
+			document.getElementById("Google").value=hash(input,"Google");
+			document.getElementById("Facebook").value=hash(input,"Facebook");
+			document.getElementById("Microsoft").value=hash(input,"Microsoft");
+			document.getElementById("Reddit").value=hash(input,"Reddit");
+			document.getElementById("Paypal").value=hash(input,"Paypal");
+			document.getElementById("Amazon").value=hash(input,"Amazon");
+			document.getElementById("Twitter").value=hash(input,"Twitter");
+			document.getElementById("Other").value=hash(input,"Other");
 		}
 		
 		function intToBinaryString(number){
@@ -132,7 +208,7 @@
 		}
 		
 		function hash(input,website){
-			if(input==="") return "<br>";
+			if(input==="") return "";
 			var initial = input+website;
 			var partOne = intToBinaryString(chunkHash(initial));
 			var partTwo = intToBinaryString(chunkHash(parseInt(partOne.split('').reverse().join(''),2)));
@@ -149,6 +225,27 @@
 				output += String.fromCharCode(num);
 			}
 			return output;
+		}
+
+		function copyToClipboard(elementId) {
+					
+		  // Create a "hidden" input
+		  var aux = document.createElement("input");
+
+		  // Assign it the value of the specified element
+		  aux.setAttribute("value", document.getElementById(elementId).value);
+
+		  // Append it to the body
+		  document.body.appendChild(aux);
+
+		  // Highlight its content
+		  aux.select();
+
+		  // Copy the highlighted text
+		  document.execCommand("copy");
+
+		  // Remove it from the body
+		  document.body.removeChild(aux);
 		}
 	</script>
 
