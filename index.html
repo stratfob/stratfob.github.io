@@ -62,7 +62,7 @@
 	</div>
 	<div class="container">
 		<div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
 				<div class="panel panel-primary">
 					<div class="panel-heading"><h3 class="panel-title">Google</h3></div>
 					<div class="panel-body">
@@ -70,6 +70,7 @@
 					      <input id="Google" type="password" class="form-control">
 					      <span class="input-group-btn">
 					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Google')">Copy</button>
+					        <button class="btn btn-default" type="button" onmousedown="showPassword('Google')" onmouseup="hidePassword('Google')">Show</button>
 					      </span>
 					    </div>
   					</div>
@@ -81,6 +82,7 @@
 					      <input id="Facebook" type="password" class="form-control">
 					      <span class="input-group-btn">
 					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Facebook')">Copy</button>
+					        <button class="btn btn-default" type="button" onmousedown="showPassword('Facebook')" onmouseup="hidePassword('Facebook')">Show</button>
 					      </span>
 					    </div>
 					</div>
@@ -92,10 +94,13 @@
 					      <input id="Microsoft" type="password" class="form-control">
 					      <span class="input-group-btn">
 					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Microsoft')">Copy</button>
+					        <button class="btn btn-default" type="button" onmousedown="showPassword('Microsoft')" onmouseup="hidePassword('Microsoft')">Show</button>
 					      </span>
 					    </div>
 					</div>
 				</div>
+				</div>
+				<div class="col-md-4">
 				<div class="panel panel-primary">
 					<div class="panel-heading"><h3 class="panel-title">Reddit</h3></div>
 					<div class="panel-body">
@@ -103,12 +108,11 @@
 					      <input id="Reddit" type="password" class="form-control">
 					      <span class="input-group-btn">
 					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Reddit')">Copy</button>
+					        <button class="btn btn-default" type="button" onmousedown="showPassword('Reddit')" onmouseup="hidePassword('Reddit')">Show</button>
 					      </span>
 					    </div>
 					</div>
 				</div>
-			</div>
-			<div class="col-md-6">
 				<div class="panel panel-primary">
 					<div class="panel-heading"><h3 class="panel-title">Paypal</h3></div>
 					<div class="panel-body">
@@ -116,6 +120,7 @@
 					      <input id="Paypal" type="password" class="form-control">
 					      <span class="input-group-btn">
 					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Paypal')">Copy</button>
+					        <button class="btn btn-default" type="button" onmousedown="showPassword('Paypal')" onmouseup="hidePassword('Paypal')">Show</button>
 					      </span>
 					    </div>
 					</div>
@@ -127,10 +132,13 @@
 					      <input id="Amazon" type="password" class="form-control">
 					      <span class="input-group-btn">
 					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Amazon')">Copy</button>
+					        <button class="btn btn-default" type="button" onmousedown="showPassword('Amazon')" onmouseup="hidePassword('Amazon')">Show</button>
 					      </span>
 					    </div>
 					</div>
 				</div>
+				</div>
+				<div class="col-md-4">
 				<div class="panel panel-primary">
 					<div class="panel-heading"><h3 class="panel-title">Twitter</h3></div>
 					<div class="panel-body">
@@ -138,6 +146,19 @@
 					      <input id="Twitter" type="password" class="form-control">
 					      <span class="input-group-btn">
 					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Twitter')">Copy</button>
+					        <button class="btn btn-default" type="button" onmousedown="showPassword('Twitter')" onmouseup="hidePassword('Twitter')">Show</button>
+					      </span>
+					    </div>
+					</div>
+				</div>
+				<div class="panel panel-primary">
+					<div class="panel-heading"><h3 class="panel-title">College/School/Work</h3></div>
+					<div class="panel-body">
+						<div class="input-group">
+					      <input id="College" type="password" class="form-control">
+					      <span class="input-group-btn">
+					        <button class="btn btn-default" type="button" onclick="copyToClipboard('College')">Copy</button>
+					        <button class="btn btn-default" type="button" onmousedown="showPassword('College')" onmouseup="hidePassword('College')">Show</button>
 					      </span>
 					    </div>
 					</div>
@@ -149,9 +170,11 @@
 					      <input id="Other" type="password" class="form-control">
 					      <span class="input-group-btn">
 					        <button class="btn btn-default" type="button" onclick="copyToClipboard('Other')">Copy</button>
+					        <button class="btn btn-default" type="button" onmousedown="showPassword('Other')" onmouseup="hidePassword('Other')">Show</button>
 					      </span>
 					    </div>
 					</div>
+				</div>
 				</div>
             </div>
 
@@ -187,6 +210,7 @@
 			document.getElementById("Paypal").value=hash(input,"Paypal");
 			document.getElementById("Amazon").value=hash(input,"Amazon");
 			document.getElementById("Twitter").value=hash(input,"Twitter");
+			document.getElementById("College").value=hash(input,"College");
 			document.getElementById("Other").value=hash(input,"Other");
 		}
 		
@@ -228,24 +252,19 @@
 		}
 
 		function copyToClipboard(elementId) {
-					
-		  // Create a "hidden" input
 		  var aux = document.createElement("input");
-
-		  // Assign it the value of the specified element
 		  aux.setAttribute("value", document.getElementById(elementId).value);
-
-		  // Append it to the body
 		  document.body.appendChild(aux);
-
-		  // Highlight its content
 		  aux.select();
-
-		  // Copy the highlighted text
 		  document.execCommand("copy");
-
-		  // Remove it from the body
 		  document.body.removeChild(aux);
+		}
+
+		function showPassword(elementId){
+		    document.getElementById(elementId).setAttribute('type', 'text');   
+		}
+		function hidePassword(elementId){
+		    document.getElementById(elementId).setAttribute('type', 'password');   
 		}
 	</script>
 
