@@ -4,6 +4,76 @@
 	<title>Boggle</title>
 </head>
 <body>
+	<div style="float:left">
+		<svg id = "svg" height='100' width='100'></svg>
+	</div>
+	<div style="float:left">
+		<button onclick="startNewGame(1)">Start New Game</button>
+		<p>
+			Time remaining:
+				<span id="time"></span>
+		</p>
+	</div>
 
+	<script type="text/javascript">
+		var boardSize = window.innerHeight-20;
+		document.getElementById("svg").setAttribute("height", boardSize);
+		document.getElementById("svg").setAttribute("width", boardSize);
+
+		var dice = [['A','A','E','E','G','N'],['A','B','B','J','O','O'],['A','C','H','O','P','S'],['A','F','F','K','P','S'],['A','O','O','T','T','W'],['C','I','M','O','T','U'],['D','E','I','L','R','X'],['D','E','L','R','V','Y'],['D','I','S','T','T','Y'],['E','E','G','H','N','W'],['E','E','I','N','S','U'],['E','H','R','T','V','W'],['E','I','O','S','S','T'],['E','L','R','T','T','Y'],['H','I','M','N','U','Qu'],['H','L','N','N','R','Z']];
+
+		var facesInPlay = padLeft(" "," ,",31).split(",");
+		
+
+		printBoard(facesInPlay);
+
+		function padLeft(string,pad,length) {
+		    return (new Array(length+1).join(pad)+string).slice(-length);
+		}
+
+		function startNewGame(minutes){
+			shakeDice();
+			printBoard(facesInPlay);
+			var mins=minutes;
+			var secs=0;
+			var timer = setInterval(function(){
+				document.getElementById("time").innerHTML= padLeft(mins,'0',2)+':'+padLeft(secs,'0',2);
+				secs--;
+				if(secs==-1){
+					if(mins<=0){
+						clearInterval(timer);
+						document.getElementById("time").innerHTML= "Time up!";
+						printBoard(padLeft(" "," ,",31).split(","));
+					}
+					else{
+						secs=59;
+						mins--;
+					}
+				}
+			}, 1000);
+		}
+
+		function printBoard(faceArray){
+			for (var i = 0; i < 4; i++) {
+				for (var j = 0; j < 4; j++) {
+					document.getElementById("svg").innerHTML+="<rect x='" + (boardSize/4)*i + "' y='" +  (boardSize/4)*j + "' width='" +  ((boardSize/4)-5) + "' height='"+  ((boardSize/4)-5) +"' style='fill:rgb(0,0,255)'/><text  text-anchor='middle' style='dominant-baseline: middle;' x='" + ( (boardSize/4)*i +  (boardSize/8)) + "' y='" + ( (boardSize/4)*j +  (boardSize/8)) + "' fill='black' font-family='Verdana' font-size='70'>" + faceArray[i*4+j] + "</text>";
+
+				}
+			}
+		}
+
+		function shakeDice(){
+			for (var i = 0; i < dice.length; i++) {
+				facesInPlay[i] = dice[i][Math.floor(Math.random() * 6)];
+			}
+			for (var i = 0; i < facesInPlay.length; i++) {
+				var temp = facesInPlay[i];
+				var swapIndex = Math.floor(Math.random() * facesInPlay.length);
+				facesInPlay[i] = facesInPlay[swapIndex];
+				facesInPlay[swapIndex] = temp;
+			}
+		}
+
+	</script>
 </body>
 </html>
