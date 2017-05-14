@@ -9,15 +9,16 @@
 		<svg id = "svg" height='100' width='100'></svg>
 	</div>
 	<div style="float:left">
-		<button onclick="newGame(1)">Start New Game</button>
+		<button onclick="newGame(0)">Start New Game</button>
 		<p>
 			Time remaining:
 				<span id="time"></span>
 		</p>
 		<div id="afterGameButtons" style="display: none;">
 			<button onclick="printBoard(facesInPlay)">Show Board</button>
-			<button>Show all words</button>
+			<button onclick="showFoundWords()">Show all words</button>
 		</div>
+		<p id="foundWords" style="display: none;"></p>
 	</div>
 
 	<script type="text/javascript">
@@ -30,6 +31,8 @@
 		var facesInPlay = padLeft(" "," ,",31).split(",");
 		var timer;		
 		var dictionary = loadDictionary();
+		var usedLetters = [];
+		var foundWords = [];
 
 		printBoard(facesInPlay);
 
@@ -37,8 +40,35 @@
 		    return (new Array(length+1).join(pad)+string).slice(-length);
 		}
 
-		function searchBoard(){
+		function showFoundWords(){
+			document.getElementById("foundWords").style.display="block";
+		}
 
+		function searchBoard(){
+			foundWords =[];
+			for (var i = 0; i < 4; i++) {
+				for (var j = 0; j < 4; j++) {
+					usedLetters = [];
+					recSearchBoard("",i,j);
+				}
+			}
+			document.getElementById("foundWords").innerHTML=foundWords;
+		}
+
+		function recSearchBoard(wordSoFar,i,j){
+			var newWord = wordSoFar + facesInPlay[i*4+j];
+			usedLetters.push(i*4+j);
+			if(newWord.length>=3 && binaryIndexOf(newWord.toLowerCase())>=0 && foundWords.indexOf(newWord)<0){
+				foundWords.push(newWord);
+			}
+			for (var k = i-1; k <= i+1; k++) {
+				for (var l = j-1; l <= j+1; l++) {
+					if(k>=0 && l>=0 && k<4 && l<4 && (usedLetters.indexOf(k*4+l)<0)){
+						recSearchBoard(newWord,k,l);
+					}
+				}
+			}
+			usedLetters.pop();
 		}
 
 		function binaryIndexOf(searchElement) {
@@ -65,9 +95,13 @@
 		}
 
 		function newGame(minutes){
+			document.getElementById("foundWords").innerHTML="";
+			document.getElementById("foundWords").style.display="none";
 			clearInterval(timer);
 			document.getElementById("afterGameButtons").style.display='none';
 			document.getElementById("time").innerHTML= padLeft(minutes,'0',2)+':'+padLeft('0','0',2);
+			shakeDice();
+			searchBoard();
 			document.getElementById("svg").innerHTML = "<text text-anchor='middle' fill='black' font-family='Verdana' font-size='70' style='dominant-baseline:middle;' x='" + (boardSize/2) + "' y='" +(boardSize/2) + "' >New game in</text>";
 			var countdown = 3;
 			timer = setInterval(function(){
@@ -85,7 +119,6 @@
 
 		function startGame(minutes){
 			clearInterval(timer);
-			shakeDice();
 			printBoard(facesInPlay);
 			var mins=minutes;
 			var secs=0;
