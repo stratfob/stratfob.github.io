@@ -9,7 +9,8 @@
 		<svg id = "svg" height='100' width='100'></svg>
 	</div>
 	<div style="float:left">
-		<button onclick="newGame(0)">Start New Game</button>
+		<button onclick="newGame()">Start New Game</button>
+		Timer(minutes): <input type="number" id="timeToPlay" value="0">
 		<p>
 			Time remaining:
 				<span id="time"></span>
@@ -18,7 +19,7 @@
 			<button onclick="printBoard(facesInPlay)">Show Board</button>
 			<button onclick="showFoundWords()">Show all words</button>
 		</div>
-		<p id="foundWords" style="display: none;"></p>
+		<p id="foundWords" style="display: none; width: 300;"></p>
 	</div>
 
 	<script type="text/javascript">
@@ -26,7 +27,7 @@
 		document.getElementById("svg").setAttribute("height", boardSize);
 		document.getElementById("svg").setAttribute("width", boardSize);
 
-		var dice = [['A','A','E','E','G','N'],['A','B','B','J','O','O'],['A','C','H','O','P','S'],['A','F','F','K','P','S'],['A','O','O','T','T','W'],['C','I','M','O','T','U'],['D','E','I','L','R','X'],['D','E','L','R','V','Y'],['D','I','S','T','T','Y'],['E','E','G','H','N','W'],['E','E','I','N','S','U'],['E','H','R','T','V','W'],['E','I','O','S','S','T'],['E','L','R','T','T','Y'],['H','I','M','N','U','QU'],['H','L','N','N','R','Z']];
+		var dice = [['A','A','E','E','G','N'],['A','B','B','J','O','O'],['A','C','H','O','P','S'],['A','F','F','K','P','S'],['A','O','O','T','T','W'],['C','I','M','O','T','U'],['D','E','I','L','R','X'],['D','E','L','R','V','Y'],['D','I','S','T','T','Y'],['E','E','G','H','N','W'],['E','E','I','N','S','U'],['E','H','R','T','V','W'],['E','I','O','S','S','T'],['E','L','R','T','T','Y'],['H','I','M','N','U','Qu'],['H','L','N','N','R','Z']];
 
 		var facesInPlay = padLeft(" "," ,",31).split(",");
 		var timer;		
@@ -76,7 +77,12 @@
 		}
 
 		function recSearch(string, currentPos, wordIndex){
-			if(string.charAt(wordIndex).toUpperCase()==facesInPlay[currentPos]){
+			var character = string.charAt(wordIndex).toLowerCase();
+			if(character=='q'&&string.charAt(wordIndex+1).toLowerCase()=='u'){
+				character="qu";
+			}
+			if(character==facesInPlay[currentPos].toLowerCase()){
+				if(character=="qu")wordIndex++;
 				if(wordIndex==string.length-1) return true;
 				usedLetters.push(currentPos);
 				var neighbours = getNeighbours(currentPos);
@@ -93,91 +99,8 @@
 			return false;
 		}
 
-		// function searchBoard(){
-		// 	foundwords = [];
-		// 	for (var i = 0; i < dictionary.length; i++) {
-		// 		if(dictionary[i].length>2){
-		// 			for (var j = 0; j < facesInPlay.length; j++) {
-		// 				if(facesInPlay[j]==dictionary[i].charAt(0).toUpperCase()){
-		// 					usedLetters.push(j);
-		// 					if(recSearch(dictionary[i],j,1)){
-		// 						foundwords.push(dictionary[i]);
-		// 						break;
-		// 					}
-		// 					usedLetters.pop();
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// 	document.getElementById("foundWords").innerHTML=foundwords;
-		// }
-
-		// function recSearch(string, currentPos, wordIndex){
-		// 	var neighbours = getNeighbours(currentPos);
-		// 	for (var i = 0; i < neighbours.length; i++) {
-		// 		if(facesInPlay[neighbours[i]]==string.charAt(wordIndex).toUpperCase()){
-		// 			if(wordIndex==string.length-1){
-		// 				return true;
-		// 			}
-		// 			usedLetters.push(neighbours[i]);
-		// 			recSearch(string,neighbours[i],wordIndex+1);
-		// 			usedLetters.pop();
-		// 		}
-		// 	}
-		// 	return false;
-		// }
-
-		// function searchBoard(){
-		// 	foundWords =[];
-		// 	for (var i = 0; i < 4; i++) {
-		// 		for (var j = 0; j < 4; j++) {
-		// 			usedLetters = [];
-		// 			recSearchBoard("",i,j);
-		// 		}
-		// 	}
-		// 	document.getElementById("foundWords").innerHTML=foundWords;
-		// }
-
-		// function recSearchBoard(wordSoFar,i,j){
-		// 	var newWord = wordSoFar + facesInPlay[i*4+j];
-		// 	usedLetters.push(i*4+j);
-		// 	if(newWord.length>=3 && binaryIndexOf(newWord.toLowerCase())>=0 && foundWords.indexOf(newWord)<0){
-		// 		foundWords.push(newWord);
-		// 	}
-		// 	for (var k = i-1; k <= i+1; k++) {
-		// 		for (var l = j-1; l <= j+1; l++) {
-		// 			if(k>=0 && l>=0 && k<4 && l<4 && (usedLetters.indexOf(k*4+l)<0)){
-		// 				recSearchBoard(newWord,k,l);
-		// 			}
-		// 		}
-		// 	}
-		// 	usedLetters.pop();
-		// }
-
-		// function binaryIndexOf(searchElement) {
-		//     var minIndex = 0;
-		//     var maxIndex = dictionary.length - 1;
-		//     var currentIndex;
-		//     var currentElement;
-		 
-		//     while (minIndex <= maxIndex) {
-		//         currentIndex = (minIndex + maxIndex) / 2 | 0;
-		//         currentElement = dictionary[currentIndex];
-		 
-		//         if (currentElement < searchElement) {
-		//             minIndex = currentIndex + 1;
-		//         }
-		//         else if (currentElement > searchElement) {
-		//             maxIndex = currentIndex - 1;
-		//         }
-		//         else {
-		//             return currentIndex;
-		//         }
-		//     }
-		//     return -1;
-		// }
-
-		function newGame(minutes){
+		function newGame(){
+			var minutes = document.getElementById("timeToPlay").value;
 			document.getElementById("foundWords").innerHTML="";
 			document.getElementById("foundWords").style.display="none";
 			clearInterval(timer);
@@ -226,7 +149,7 @@
 		function printBoard(faceArray){
 			for (var i = 0; i < 4; i++) {
 				for (var j = 0; j < 4; j++) {
-					document.getElementById("svg").innerHTML+="<rect x='" + (boardSize/4)*i + "' y='" +  (boardSize/4)*j + "' width='" +  ((boardSize/4)-5) + "' height='"+  ((boardSize/4)-5) +"' style='fill:rgb(0,0,255)'/><text  text-anchor='middle' style='dominant-baseline: middle;' x='" + ( (boardSize/4)*i +  (boardSize/8)) + "' y='" + ( (boardSize/4)*j +  (boardSize/8)) + "' fill='black' font-family='Verdana' font-size='70'>" + faceArray[i*4+j] + "</text>";
+					document.getElementById("svg").innerHTML+="<rect x='" + ((boardSize/4)*i +1)+ "' y='" +  ((boardSize/4)*j+1) + "' width='" +  ((boardSize/4)-5) + "' height='"+  ((boardSize/4)-5) +"' style='fill:rgb(255,255,255);stroke:rgb(0,0,0)'/><text  text-anchor='middle' style='dominant-baseline: middle;' x='" + ( (boardSize/4)*i +  (boardSize/8)) + "' y='" + ( (boardSize/4)*j +  (boardSize/8)) + "' fill='black' font-family='Verdana' font-size='70'>" + faceArray[i*4+j] + "</text>";
 
 				}
 			}
