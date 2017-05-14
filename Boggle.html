@@ -15,6 +15,15 @@
 			Time remaining:
 				<span id="time"></span>
 		</p>
+		<p>Word points:</p>
+		<ul>
+			<li>3 Letters: 1 point</li>
+			<li>4 Letters: 1 point</li>
+			<li>5 Letters: 2 points</li>
+			<li>6 Letters: 3 points</li>
+			<li>7 Letters: 4 points</li>
+			<li>8 or More Letters: 11 points</li>
+		</ul>
 		<div id="afterGameButtons" style="display: none;">
 			<button onclick="printBoard(facesInPlay)">Show Board</button>
 			<button onclick="showFoundWords()">Show all words</button>
@@ -72,9 +81,10 @@
 					}
 				}
 			}
-			for (var i = 0; i < foundwords.length; i++) {
+			for (var i = 0; i < foundwords.length-1; i++) {
 				document.getElementById("foundWords").innerHTML += foundwords[i] + ", ";
 			}
+			document.getElementById("foundWords").innerHTML += foundwords[foundwords.length-1];
 		}
 
 		function recSearch(string, currentPos, wordIndex){
