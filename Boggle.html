@@ -10,7 +10,7 @@
 	</div>
 	<div style="float:left">
 		<button onclick="newGame()">Start New Game</button>
-		Timer(minutes): <input type="number" id="timeToPlay" value="0">
+		Timer(minutes): <input type="number" id="timeToPlay" min="0" value="3">
 		<p>
 			Time remaining:
 				<span id="time"></span>
@@ -19,7 +19,8 @@
 			<button onclick="printBoard(facesInPlay)">Show Board</button>
 			<button onclick="showFoundWords()">Show all words</button>
 		</div>
-		<p id="foundWords" style="display: none; width: 300;"></p>
+		<br>
+		<textarea id="foundWords" cols="70" rows="20" style="display: none;"></textarea>
 	</div>
 
 	<script type="text/javascript">
@@ -101,33 +102,41 @@
 
 		function newGame(){
 			var minutes = document.getElementById("timeToPlay").value;
-			document.getElementById("foundWords").innerHTML="";
-			document.getElementById("foundWords").style.display="none";
-			clearInterval(timer);
-			document.getElementById("afterGameButtons").style.display='none';
-			document.getElementById("time").innerHTML= padLeft(minutes,'0',2)+':'+padLeft('0','0',2);
-			shakeDice();
-			searchBoard();
-			document.getElementById("svg").innerHTML = "<text text-anchor='middle' fill='black' font-family='Verdana' font-size='70' style='dominant-baseline:middle;' x='" + (boardSize/2) + "' y='" +(boardSize/2) + "' >New game in</text>";
-			var countdown = 3;
-			timer = setInterval(function(){
-				if(countdown>0){
-					document.getElementById("svg").innerHTML = "<text text-anchor='middle' fill='black' font-family='Verdana' font-size='70' style='dominant-baseline:middle;' x='" + (boardSize/2) + "' y='" +(boardSize/2) + "' >" + countdown + "</text>";
-					countdown--;
-				}
-				else{
-					document.getElementById("svg").innerHTML = "";
-					clearInterval(timer);
-					startGame(minutes);
-				}
-			},1000);
+			if(minutes<0){
+				alert("Timer must be positive!");
+			}
+			else{
+				var seconds = Math.floor(minutes*60);
+				minutes = Math.floor(seconds/60);
+				seconds = seconds%60;
+				document.getElementById("foundWords").innerHTML="";
+				document.getElementById("foundWords").style.display="none";
+				clearInterval(timer);
+				document.getElementById("afterGameButtons").style.display='none';
+				document.getElementById("time").innerHTML= padLeft(minutes,'0',2)+':'+padLeft(seconds,'0',2);
+				shakeDice();
+				searchBoard();
+				document.getElementById("svg").innerHTML = "<text text-anchor='middle' fill='black' font-family='Verdana' font-size='70' style='dominant-baseline:middle;' x='" + (boardSize/2) + "' y='" +(boardSize/2) + "' >New game in</text>";
+				var countdown = 3;
+				timer = setInterval(function(){
+					if(countdown>0){
+						document.getElementById("svg").innerHTML = "<text text-anchor='middle' fill='black' font-family='Verdana' font-size='70' style='dominant-baseline:middle;' x='" + (boardSize/2) + "' y='" +(boardSize/2) + "' >" + countdown + "</text>";
+						countdown--;
+					}
+					else{
+						document.getElementById("svg").innerHTML = "";
+						clearInterval(timer);
+						startGame(minutes,seconds);
+					}
+				},1000);
+			}
 		}
 
-		function startGame(minutes){
+		function startGame(minutes,seconds){
 			clearInterval(timer);
 			printBoard(facesInPlay);
 			var mins=minutes;
-			var secs=0;
+			var secs=seconds;
 			timer = setInterval(function(){
 				document.getElementById("time").innerHTML= padLeft(mins,'0',2)+':'+padLeft(secs,'0',2);
 				secs--;
