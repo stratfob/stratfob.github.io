@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Boggle</title>
+	<script src="js/dictionary.js"></script>
+</head>
+<body>
+	<div style="float:left">
+		<svg id = "svg" height='100' width='100'></svg>
+	</div>
+	<div style="float:left">
+		<button onclick="newGame()">Start New Game</button>
+		Timer(minutes): <input type="number" id="timeToPlay" min="0" value="3">
+		<p>
+			Time remaining:
+				<span id="time"></span>
+		</p>
+		<p>Word points:</p>
+		<ul>
+			<li>3 Letters: 1 point</li>
+			<li>4 Letters: 1 point</li>
+			<li>5 Letters: 2 points</li>
+			<li>6 Letters: 3 points</li>
+			<li>7 Letters: 4 points</li>
+			<li>8 or More Letters: 11 points</li>
+		</ul>
+		<div id="afterGameButtons" style="display: none;">
+			<button onclick="printBoard(facesInPlay)">Show Board</button>
+			<button onclick="showFoundWords()">Show all words</button>
+		</div>
+		<br>
+		<input type="text" id="wordInput" onkeydown="wordEntry(this)">
+		<h4>Found words:</h4>
+		<h3 id="score" style="display: none;"></h3>
+		<textarea style="color: green" readonly id="correctWords" cols="20" rows="20"></textarea>
+		<textarea style="color: red" readonly id="incorrectWords" cols="20" rows="20"></textarea>
+		
+		<textarea readonly id="foundWords" cols="70" rows="20" style="display: none;"></textarea>
+	</div>
+
+	<script type="text/javascript">
+		var boardSize = window.innerHeight-20;
+		document.getElementById("svg").setAttribute("height", boardSize);
+		document.getElementById("svg").setAttribute("width", boardSize);
+
+		var dice = [['A','A','E','E','G','N'],['A','B','B','J','O','O'],['A','C','H','O','P','S'],['A','F','F','K','P','S'],['A','O','O','T','T','W'],['C','I','M','O','T','U'],['D','E','I','L','R','X'],['D','E','L','R','V','Y'],['D','I','S','T','T','Y'],['E','E','G','H','N','W'],['E','E','I','N','S','U'],['E','H','R','T','V','W'],['E','I','O','S','S','T'],['E','L','R','T','T','Y'],['H','I','M','N','U','Qu'],['H','L','N','N','R','Z']];
+
+		var facesInPlay = padLeft(" "," ,",31).split(",");
+		var timer;		
+		var dictionary = loadDictionary();
+		var usedLetters = [];
+		var foundWords = [];
+		var correctWords = [];
+		var incorrectWords = [];
+		var gameInPlay = false;
+
+		printBoard(facesInPlay);
+
+		function wordEntry(element){
+			if(gameInPlay){
+				if(event.key === 'Enter'){
+					var word = element.value.toUpperCase();
+					element.value = "";
+					if(word.length>2){
+						if(foundwords.indexOf(word)!==-1){
+							if (correctWords.indexOf(word)===-1){
+								correctWords.push(word);
+								document.getElementById("correctWords").innerHTML=word + "\n" + document.getElementById("correctWords").innerHTML;
+							}
+						}
+						else if(incorrectWords.indexOf(word)===-1){
+							incorrectWords.push(word);
+							document.getElementById("incorrectWords").innerHTML=word + "\n" + document.getElementById("incorrectWords").innerHTML;
+						}
+					}
+				}
+			}
+		}
+
+		function countScore(){
+			var score = 0;
+			for (var i = correctWords.length - 1; i >= 0; i--) {
+				switch (correctWords[i].length){
+					case 3:
+					case 4:
+					score++;
+					break;
+					case 5:
+					score += 2;
+					break;
+					case 6:
+					score += 3;
+					break;
+					case 7:
+					score += 4;
+					break;
+					default:
+					score += 11;
+					break;
+				}
+			}
+			return score;
+		}
+
+		function padLeft(string,pad,length) {
+		    return (new Array(length+1).join(pad)+string).slice(-length);
+		}
+
+		function showFoundWords(){
+			document.getElementById("foundWords").style.display="block";
+		}
+
+		function getNeighbours(a){
+			var ai = Math.floor(a/4);
+			var aj = a%4;
+			var neighbours = [];
+			for (var i = ai-1; i < ai+2; i++) {
+				for (var j = aj-1; j < aj+2; j++) {
+					if(i>=0 && j>=0 && i<4 && j<4 && (a!==i*4+j)){
+						neighbours.push(i*4+j);
+					}
+				}
+			}
+			return neighbours;
+		}
+
+		function searchBoard(){
+			foundwords = [];
+			for (var i = 0; i < dictionary.length; i++) {
+				if(dictionary[i].length>2){
+					for (var j = 0; j < facesInPlay.length; j++) {
+						if(recSearch(dictionary[i],j,0)){
+							foundwords.push(dictionary[i]);
+							break;
+						}
+					}
+				}
+			}
+			for (var i = 0; i < foundwords.length-1; i++) {
+				document.getElementById("foundWords").innerHTML += foundwords[i] + ", ";
+			}
+			document.getElementById("foundWords").innerHTML += foundwords[foundwords.length-1];
+		}
+
+		function recSearch(string, currentPos, wordIndex){
+			var character = string.charAt(wordIndex).toLowerCase();
+			if(character=='q'&&string.charAt(wordIndex+1).toLowerCase()=='u'){
+				character="qu";
+			}
+			if(character==facesInPlay[currentPos].toLowerCase()){
+				if(character=="qu")wordIndex++;
+				if(wordIndex==string.length-1) return true;
+				usedLetters.push(currentPos);
+				var neighbours = getNeighbours(currentPos);
+				for (var i = 0; i < neighbours.length; i++) {
+					if(usedLetters.indexOf(neighbours[i])<0){
+						if(recSearch(string,neighbours[i],wordIndex+1)){
+							usedLetters.pop();
+							return true;
+						}
+					}
+				}
+				usedLetters.pop();
+			}
+			return false;
+		}
+
+		function newGame(){
+			var minutes = document.getElementById("timeToPlay").value;
+			if(minutes<0){
+				alert("Timer must be positive!");
+			}
+			else{
+				var seconds = Math.floor(minutes*60);
+				minutes = Math.floor(seconds/60);
+				seconds = seconds%60;
+				document.getElementById("foundWords").innerHTML="";
+				document.getElementById("correctWords").innerHTML="";
+				document.getElementById("incorrectWords").innerHTML="";
+				correctWords = [];
+				incorrectWords = [];
+				document.getElementById("foundWords").style.display="none";
+				document.getElementById("score").style.display="none";
+				clearInterval(timer);
+				document.getElementById("afterGameButtons").style.display='none';
+				document.getElementById("time").innerHTML= padLeft(minutes,'0',2)+':'+padLeft(seconds,'0',2);
+				shakeDice();
+				searchBoard();
+				document.getElementById("svg").innerHTML = "<text text-anchor='middle' fill='black' font-family='Verdana' font-size='70' style='dominant-baseline:middle;' x='" + (boardSize/2) + "' y='" +(boardSize/2) + "' >New game in</text>";
+				var countdown = 3;
+				timer = setInterval(function(){
+					if(countdown>0){
+						document.getElementById("svg").innerHTML = "<text text-anchor='middle' fill='black' font-family='Verdana' font-size='70' style='dominant-baseline:middle;' x='" + (boardSize/2) + "' y='" +(boardSize/2) + "' >" + countdown + "</text>";
+						countdown--;
+					}
+					else{
+						document.getElementById("svg").innerHTML = "";
+						clearInterval(timer);
+						startGame(minutes,seconds);
+					}
+				},1000);
+			}
+		}
+
+		function startGame(minutes,seconds){
+			clearInterval(timer);
+			printBoard(facesInPlay);
+			var mins=minutes;
+			var secs=seconds;
+			gameInPlay = true;
+			timer = setInterval(function(){
+				document.getElementById("time").innerHTML= padLeft(mins,'0',2)+':'+padLeft(secs,'0',2);
+				secs--;
+				if(secs==-1){
+					if(mins<=0){
+						clearInterval(timer);
+						document.getElementById("time").innerHTML= "Time up!";
+						printBoard(padLeft(" "," ,",31).split(","));
+						document.getElementById("afterGameButtons").style.display='block';
+						gameInPlay = false;
+						document.getElementById("score").innerHTML='Score: ' + countScore();
+						document.getElementById("score").style.display='block';
+					}
+					else{
+						secs=59;
+						mins--;
+					}
+				}
+			}, 1000);
+		}
+
+		function printBoard(faceArray){
+			for (var i = 0; i < 4; i++) {
+				for (var j = 0; j < 4; j++) {
+					document.getElementById("svg").innerHTML+="<rect x='" + ((boardSize/4)*i +1)+ "' y='" +  ((boardSize/4)*j+1) + "' width='" +  ((boardSize/4)-5) + "' height='"+  ((boardSize/4)-5) +"' style='fill:rgb(255,255,255);stroke:rgb(0,0,0)'/><text  text-anchor='middle' style='dominant-baseline: middle;' x='" + ( (boardSize/4)*i +  (boardSize/8)) + "' y='" + ( (boardSize/4)*j +  (boardSize/8)) + "' fill='black' font-family='Verdana' font-size='70'>" + faceArray[i*4+j] + "</text>";
+
+				}
+			}
+		}
+
+		function shakeDice(){
+			for (var i = 0; i < dice.length; i++) {
+				facesInPlay[i] = dice[i][Math.floor(Math.random() * 6)];
+			}
+			for (var i = 0; i < facesInPlay.length; i++) {
+				var temp = facesInPlay[i];
+				var swapIndex = Math.floor(Math.random() * facesInPlay.length);
+				facesInPlay[i] = facesInPlay[swapIndex];
+				facesInPlay[swapIndex] = temp;
+			}
+		}
+
+	</script>
+</body>
+</html>
