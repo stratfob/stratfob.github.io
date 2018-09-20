@@ -2,6 +2,23 @@
 <html>
 <head>
 	<title>Boggle</title>
+	<script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-database.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-functions.js"></script>
+
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyCKeL1HQw6RZwdo0bbI4JcVgA26_i2DFXQ",
+	    authDomain: "boggle-d92fc.firebaseapp.com",
+	    databaseURL: "https://boggle-d92fc.firebaseio.com",
+	    projectId: "boggle-d92fc",
+	    storageBucket: "",
+	    messagingSenderId: "853715485148"
+	  };
+	  firebase.initializeApp(config);
+	</script>
 	<script src="js/dictionary.js"></script>
 </head>
 <body>
@@ -11,8 +28,8 @@
 	<div style="float:left">
 		<p>
 			<button onclick="newGame()">Start New Game</button>
-			Enter game code:
-			<input type="text" id="code">
+			Enter Name:
+			<input type="text" id="nameInput">
 		</p>
 		<p>
 			Time remaining:
@@ -35,6 +52,7 @@
 		<input type="text" id="wordInput" onkeydown="wordEntry(this)">
 		<h4>Found words:</h4>
 		<h3 id="score" style="display: none;"></h3>
+		<button id="scoreSubmit" style="display: none;" onclick="submitScore()">Submit Score</button>
 		<textarea style="color: green" readonly id="correctWords" cols="20" rows="20"></textarea>
 		<textarea style="color: red" readonly id="incorrectWords" cols="20" rows="20"></textarea>
 		
@@ -56,8 +74,26 @@
 		var correctWords = [];
 		var incorrectWords = [];
 		var gameInPlay = false;
+		var code;
+		var user = "";
 
 		printBoard(facesInPlay);
+
+		function generateCode(){
+			var text = "";
+			var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+			for (var i = 0; i < 16; i++){
+				text += possible.charAt(Math.floor(Math.random() * possible.length));
+			}
+			return text;
+		}
+
+		function submitScore(){
+			firebase.database().ref('games/' + code).set({
+				username: user,
+				wordsFound: correctWords
+			});
+		}
 
 		function wordEntry(element){
 			if(gameInPlay){
@@ -169,14 +205,19 @@
 		}
 
 		function newGame(){
-			var minutes = 3;
+			var minutes = 0.1; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			code = generateCode();
 			if(minutes<0){
 				alert("Timer must be positive!");
+			}
+			else if(document.getElementById("nameInput").value===""){
+				alert("You must enter a name!");
 			}
 			else{
 				var seconds = Math.floor(minutes*60);
 				minutes = Math.floor(seconds/60);
 				seconds = seconds%60;
+				user = document.getElementById("nameInput").value;
 				document.getElementById("foundWords").innerHTML="";
 				document.getElementById("correctWords").innerHTML="";
 				document.getElementById("incorrectWords").innerHTML="";
@@ -184,6 +225,7 @@
 				incorrectWords = [];
 				document.getElementById("foundWords").style.display="none";
 				document.getElementById("score").style.display="none";
+				document.getElementById("scoreSubmit").style.display="none";
 				clearInterval(timer);
 				document.getElementById("afterGameButtons").style.display='none';
 				document.getElementById("time").innerHTML= padLeft(minutes,'0',2)+':'+padLeft(seconds,'0',2);
@@ -223,6 +265,7 @@
 						gameInPlay = false;
 						document.getElementById("score").innerHTML='Score: ' + countScore();
 						document.getElementById("score").style.display='block';
+						document.getElementById("scoreSubmit").style.display='block';
 					}
 					else{
 						secs=59;
@@ -268,7 +311,6 @@
 		}
 
 		function shakeDice(){
-			var code = document.getElementById("code").value;
 			var positions = [];
 			var values = [];
 			var binary = hash(code);
