@@ -30,6 +30,8 @@
 			<button onclick="newGame()">Start New Game</button>
 			Enter Name:
 			<input type="text" id="nameInput">
+			Enter Game Code:
+			<input type="text" id="codeInput">
 		</p>
 		<p>
 			Time remaining:
@@ -53,6 +55,7 @@
 		<h4>Found words:</h4>
 		<h3 id="score" style="display: none;"></h3>
 		<button id="scoreSubmit" style="display: none;" onclick="submitScore()">Submit Score</button>
+		<p id="submitted" style="display: none;">Submitted!</p>
 		<textarea style="color: green" readonly id="correctWords" cols="20" rows="20"></textarea>
 		<textarea style="color: red" readonly id="incorrectWords" cols="20" rows="20"></textarea>
 		
@@ -89,9 +92,12 @@
 		}
 
 		function submitScore(){
-			firebase.database().ref('games/' + code).set({
+			document.getElementById("scoreSubmit").style.display="none";
+			document.getElementById("submitted").style.display="block";
+			firebase.database().ref('games/' + code + '/players').push({
 				username: user,
-				wordsFound: correctWords
+				wordsFound: correctWords,
+				score: countScore()
 			});
 		}
 
@@ -205,13 +211,16 @@
 		}
 
 		function newGame(){
-			var minutes = 0.1; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			code = generateCode();
+			var minutes = 3;
+			code = document.getElementById("codeInput").value;
 			if(minutes<0){
 				alert("Timer must be positive!");
 			}
 			else if(document.getElementById("nameInput").value===""){
 				alert("You must enter a name!");
+			}
+			else if(code===""){
+				alert("You must enter a game code!");
 			}
 			else{
 				var seconds = Math.floor(minutes*60);
@@ -226,6 +235,7 @@
 				document.getElementById("foundWords").style.display="none";
 				document.getElementById("score").style.display="none";
 				document.getElementById("scoreSubmit").style.display="none";
+				document.getElementById("submitted").style.display="none";
 				clearInterval(timer);
 				document.getElementById("afterGameButtons").style.display='none';
 				document.getElementById("time").innerHTML= padLeft(minutes,'0',2)+':'+padLeft(seconds,'0',2);
